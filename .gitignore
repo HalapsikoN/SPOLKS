@@ -1,6 +1,5 @@
 material
-server
-goodServer
 .idea
 *.iml
 target
+treshPackage
