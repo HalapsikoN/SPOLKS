@@ -3,9 +3,6 @@ package by.bsuir.spolks.entity;
 import by.bsuir.spolks.command.CommandName;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Value;
 
 @Data
 @Builder

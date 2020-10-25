@@ -1,16 +1,24 @@
 package by.bsuir.spolks.service;
 
 import by.bsuir.spolks.command.CommandName;
-import by.bsuir.spolks.entity.UploadCommandMemory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Connection {
 
     private static final Connection instance = new Connection();
+
+    private static MemoryService memoryService = MemoryService.getInstance();
 
     private static final String FILE_PATH = "server\\src\\main\\resources\\files\\";
     private static final Integer PACKAGE_SIZE = 1024;
@@ -21,7 +29,7 @@ public class Connection {
         return instance;
     }
 
-    public static void doTCPDownload(DataInputStream fromClient, DataOutputStream toClient, String fileName, int startByte) throws IOException, InterruptedException {
+    public static void doTCPDownload(String clientId, DataInputStream fromClient, DataOutputStream toClient, String fileName, int startByte) throws IOException, InterruptedException {
 
         File file = new File(FILE_PATH + fileName);
 
@@ -33,14 +41,18 @@ public class Connection {
                 bis.read(fileByteArray, 0, fileByteArray.length);
             }
 
-            doTCPDownloadFromByteArray(fromClient, toClient, fileByteArray, startByte);
+            int current = doTCPDownloadFromByteArray(fromClient, toClient, fileByteArray, startByte);
+
+            if (fileByteArray.length != current) {
+                memoryService.saveDownloadCommandInfo(clientId, CommandName.DOWNLOAD, fileName, current, fileByteArray);
+            }
 
         } else {
             toClient.writeUTF("0");
         }
     }
 
-    public static void doTCPUpload(DataInputStream fromClient, DataOutputStream toClient, String filename, byte[] memoryArray, int startByte) throws IOException {
+    public static void doTCPUpload(String clientId, DataInputStream fromClient, DataOutputStream toClient, String filename, byte[] memoryArray, int startByte) throws IOException {
 
         String[] answer = fromClient.readUTF().split(" ", 2);
         if (answer[0].equalsIgnoreCase("1")) {
@@ -58,8 +70,7 @@ public class Connection {
 
                 toClient.writeUTF("The file has been gotten fully");
             } else {
-                UploadCommandMemory memory = UploadCommandMemory.getInstance();
-                memory.saveDownloadCommandInfo(CommandName.UPLOAD, filename, current, fileByteArray);
+                memoryService.saveDownloadCommandInfo(clientId, CommandName.UPLOAD, filename, current, fileByteArray);
                 toClient.writeUTF("The file has not been gotten fully");
             }
         } else {
@@ -69,7 +80,7 @@ public class Connection {
 
     }
 
-    private static void doTCPDownloadFromByteArray(DataInputStream fromClient, DataOutputStream toClient, byte[] fileByteArray, int startByte) throws InterruptedException, IOException {
+    private static int doTCPDownloadFromByteArray(DataInputStream fromClient, DataOutputStream toClient, byte[] fileByteArray, int startByte) throws InterruptedException, IOException {
 
         int current = startByte;
 
@@ -87,6 +98,8 @@ public class Connection {
             current += bytesToSend;
             System.out.println(current);
         }
+
+        return current;
     }
 
     private static int doTCPUploadToByteArray(DataInputStream fromClient, DataOutputStream toClient, byte[] fileByteArray, int startByte) throws IOException {

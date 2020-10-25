@@ -10,13 +10,8 @@ import java.io.IOException;
 public class DownloadCommand implements Command {
 
     @Override
-    public void execute(String commandText, DataInputStream fromClient, DataOutputStream toClient) throws IOException {
+    public void execute(String clientId, String commandText, DataInputStream fromClient, DataOutputStream toClient) throws IOException, InterruptedException {
 
-        try {
-            Connection.doTCPDownload(fromClient, toClient, commandText, 0);
-        } catch (InterruptedException e) {
-            System.out.println(e.getLocalizedMessage());
-        }
-
+        Connection.doTCPDownload(clientId, fromClient, toClient, commandText, 0);
     }
 }

@@ -2,11 +2,7 @@ package by.bsuir.spolks.congifuration;
 
 import by.bsuir.spolks.exceptions.ServerException;
 import by.bsuir.spolks.exceptions.ValidationException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
@@ -15,7 +11,6 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,7 +23,7 @@ public class ServerThreadStarter {
 
     public void start() throws ValidationException, ServerException {
 
-        String host=serverConfiguration.getHost();
+        String host = serverConfiguration.getHost();
         Integer maxNumberOfClients = serverConfiguration.getMaxClientNumber();
         Integer portNumber = serverConfiguration.getPort();
         if (maxNumberOfClients < 1) {
@@ -42,11 +37,11 @@ public class ServerThreadStarter {
 
         try (ServerSocket server = new ServerSocket(portNumber, maxNumberOfClients, InetAddress.getByName(host))) {
 
-            BufferedReader userServiceInput=new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader userServiceInput = new BufferedReader(new InputStreamReader(System.in));
 
-            System.out.println("Server starts on host ("+host+":"+portNumber+") with maximum ("+maxNumberOfClients+") available clients");
+            System.out.println("Server starts on host (" + host + ":" + portNumber + ") with maximum (" + maxNumberOfClients + ") available clients");
 
-            while (!server.isClosed()){
+            while (!server.isClosed()) {
 
                 if (userServiceInput.ready()) {
                     System.out.println("Main Server found any messages in channel, let's look at them.");
@@ -59,7 +54,7 @@ public class ServerThreadStarter {
                     }
                 }
 
-                Socket client=server.accept();
+                Socket client = server.accept();
 
                 executorService.execute(new ServerThread(client));
             }

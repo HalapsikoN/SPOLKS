@@ -11,7 +11,7 @@ import java.io.IOException;
 public class EchoCommand implements Command {
 
     @Override
-    public void execute(String commandText, DataInputStream fromClient, DataOutputStream toClient) throws IOException {
+    public void execute(String clientId, String commandText, DataInputStream fromClient, DataOutputStream toClient) throws IOException {
 
         toClient.writeUTF(commandText);
     }

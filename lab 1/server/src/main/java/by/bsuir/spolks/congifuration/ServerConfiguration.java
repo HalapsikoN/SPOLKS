@@ -1,7 +1,6 @@
 package by.bsuir.spolks.congifuration;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 
 @Value

@@ -3,7 +3,7 @@ package by.bsuir.spolks.configuration;
 import by.bsuir.spolks.command.Command;
 import by.bsuir.spolks.command.CommandProvider;
 import by.bsuir.spolks.exceptions.ClientException;
-import by.bsuir.spolks.util.DownloadContinueService;
+import by.bsuir.spolks.util.LoadContinueService;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
@@ -30,7 +30,7 @@ public class ClientStarter {
             System.out.println("Connection is successfully established...");
             System.out.println(wrapMessageFromServer(fromServer.readUTF()));
 
-            DownloadContinueService.checkUnfinishedCommand(fromServer, toServer);
+            LoadContinueService.checkUnfinishedCommand(fromServer, toServer);
 
             while (!socket.isOutputShutdown()) {
 

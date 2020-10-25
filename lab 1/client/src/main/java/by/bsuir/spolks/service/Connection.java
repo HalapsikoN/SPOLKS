@@ -1,26 +1,18 @@
 package by.bsuir.spolks.service;
 
 import by.bsuir.spolks.command.CommandName;
-import by.bsuir.spolks.entity.DownloadStatus;
-import by.bsuir.spolks.entity.StoppedCommandMemory;
+import by.bsuir.spolks.entity.StoppedDownloadFileMemory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
+import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Connection {
 
     private static final Connection instance = new Connection();
+    private static StoppedDownloadFileMemory memory = StoppedDownloadFileMemory.getInstance();
 
     private static final String FILE_PATH = "client\\src\\main\\resources\\files\\";
     private static final Integer PACKAGE_SIZE = 1024;
@@ -53,16 +45,15 @@ public class Connection {
                 long resultTimeInSeconds = TimeUnit.SECONDS.convert(endTime - startTime, TimeUnit.MILLISECONDS);
                 System.out.println("Total time: " + resultTimeInSeconds + " seconds");
                 System.out.println("Bandwidth: " + (double) fileSize / resultTimeInSeconds + " Bit/s");
-                StoppedCommandMemory.getInstance().setSaved(false);
+                StoppedDownloadFileMemory.getInstance().setSaved(false);
             } else {
-                StoppedCommandMemory memory = StoppedCommandMemory.getInstance();
                 memory.saveDownloadCommandInfo(CommandName.DOWNLOAD, fileName, current, fileByteArray);
                 System.out.println("The file has not been gotten fully(" + current + "/" + fileSize + ")");
                 System.out.println(memory);
             }
         } else {
             System.out.println("There is no such file on server");
-            StoppedCommandMemory.getInstance().setSaved(false);
+            StoppedDownloadFileMemory.getInstance().setSaved(false);
         }
     }
 
@@ -83,15 +74,13 @@ public class Connection {
             long endTime = System.currentTimeMillis();
 
             if (current != fileByteArray.length) {
-                StoppedCommandMemory memory = StoppedCommandMemory.getInstance();
-                memory.saveDownloadCommandInfo(CommandName.UPLOAD_CONTINUE, fileName, current, fileByteArray);
                 System.out.println("The file has not been send fully");
             } else {
                 System.out.println("The file has been send fully. Received (" + fileByteArray.length + ") bytes");
                 long resultTimeInSeconds = TimeUnit.SECONDS.convert(endTime - startTime, TimeUnit.MILLISECONDS);
                 System.out.println("Total time: " + resultTimeInSeconds + " seconds");
                 System.out.println("Bandwidth: " + (double) fileByteArray.length / resultTimeInSeconds + " Bit/s");
-                StoppedCommandMemory.getInstance().setSaved(false);
+                StoppedDownloadFileMemory.getInstance().setSaved(false);
             }
         } else {
             toServer.writeUTF("0");

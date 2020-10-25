@@ -12,9 +12,9 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class StoppedCommandMemory {
+public class StoppedDownloadFileMemory {
 
-    private static final StoppedCommandMemory instance=new StoppedCommandMemory();
+    private static final StoppedDownloadFileMemory instance=new StoppedDownloadFileMemory();
 
     @Setter
     private boolean isSaved;
@@ -23,7 +23,7 @@ public class StoppedCommandMemory {
     private Integer downloadedBytes;
     private byte[] fileByteArray;
 
-    public static StoppedCommandMemory getInstance() {
+    public static StoppedDownloadFileMemory getInstance() {
         return instance;
     }
 

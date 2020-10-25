@@ -13,15 +13,15 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationPropertyReader {
 
-    private static final String CONFIGURATION_FILE_PATH ="server/src/main/resources/configuration.properties";
+    private static final String CONFIGURATION_FILE_PATH = "server/src/main/resources/configuration.properties";
 
-    private static final String CONFIGURATION_IP="server.ip";
-    private static final String CONFIGURATION_PORT="server.port";
-    private static final String CONFIGURATION_MAX_CONNECTIONS="server.maxConnections";
+    private static final String CONFIGURATION_IP = "server.ip";
+    private static final String CONFIGURATION_PORT = "server.port";
+    private static final String CONFIGURATION_MAX_CONNECTIONS = "server.maxConnections";
 
     public static ServerConfiguration getServerConfiguration() throws ConfigurationException {
 
-        try (InputStream input = new FileInputStream(CONFIGURATION_FILE_PATH)){
+        try (InputStream input = new FileInputStream(CONFIGURATION_FILE_PATH)) {
 
             Properties properties = new Properties();
 
