@@ -1,7 +1,7 @@
 package by.bsuir.spolks;
 
-import by.bsuir.spolks.congifuration.ServerConfiguration;
-import by.bsuir.spolks.congifuration.ServerThreadStarter;
+import by.bsuir.spolks.entity.ServerConfiguration;
+import by.bsuir.spolks.congifuration.ServerTCPThreadStarter;
 import by.bsuir.spolks.exceptions.ConfigurationException;
 import by.bsuir.spolks.exceptions.ServerException;
 import by.bsuir.spolks.exceptions.ValidationException;
@@ -14,10 +14,10 @@ public class MainServer {
         try {
             ServerConfiguration serverConfiguration = ConfigurationPropertyReader.getServerConfiguration();
 
-            ServerThreadStarter serverThreadStarter = new ServerThreadStarter(serverConfiguration);
+            ServerTCPThreadStarter serverTCPThreadStarter = new ServerTCPThreadStarter(serverConfiguration);
 
             System.out.println("Start...");
-            serverThreadStarter.start();
+            serverTCPThreadStarter.start();
             System.out.println("End...");
         } catch (ValidationException | ServerException | ConfigurationException e) {
             System.out.println(e.getLocalizedMessage());

@@ -1,6 +1,6 @@
 package by.bsuir.spolks.util;
 
-import by.bsuir.spolks.configuration.ClientConfiguration;
+import by.bsuir.spolks.entity.ClientConfiguration;
 import by.bsuir.spolks.exceptions.ConfigurationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,8 @@ public class ConfigurationPropertyReader {
     private static final String CONFIGURATION_FILE_PATH = "client/src/main/resources/configuration.properties";
 
     private static final String CONFIGURATION_IP = "server.ip";
-    private static final String CONFIGURATION_PORT = "server.port";
+    private static final String CONFIGURATION_PORT_TCP = "server.portTCP";
+    private static final String CONFIGURATION_PORT_UDP = "server.portUDP";
 
     public static ClientConfiguration getServerConfiguration() throws ConfigurationException {
 
@@ -28,7 +29,8 @@ public class ConfigurationPropertyReader {
 
             return ClientConfiguration.builder()
                     .host(properties.getProperty(CONFIGURATION_IP))
-                    .port(Integer.parseInt(properties.getProperty(CONFIGURATION_PORT)))
+                    .portTCP(Integer.parseInt(properties.getProperty(CONFIGURATION_PORT_TCP)))
+                    .portUDP(Integer.parseInt(properties.getProperty(CONFIGURATION_PORT_UDP)))
                     .build();
         } catch (IOException e) {
             throw new ConfigurationException(e);

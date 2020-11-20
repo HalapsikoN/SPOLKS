@@ -1,9 +1,11 @@
 package by.bsuir.spolks;
 
-import by.bsuir.spolks.configuration.ClientConfiguration;
-import by.bsuir.spolks.configuration.ClientStarter;
+import by.bsuir.spolks.configuration.UDPClientStarter;
+import by.bsuir.spolks.entity.ClientConfiguration;
+import by.bsuir.spolks.configuration.TCPClientStarter;
 import by.bsuir.spolks.exceptions.ClientException;
 import by.bsuir.spolks.exceptions.ConfigurationException;
+import by.bsuir.spolks.service.UDPConnectionService;
 import by.bsuir.spolks.util.ConfigurationPropertyReader;
 
 import java.io.BufferedReader;
@@ -26,15 +28,16 @@ public class MainClient {
                     break;
                 } else {
                     try {
-                        System.out.println("Trying to connect(" + clientConfiguration.getHost() + ":" + clientConfiguration.getPort() + ")...");
-                        ClientStarter clientStarter = new ClientStarter(clientConfiguration);
-                        clientStarter.start();
+                        System.out.println("Trying to connect(" + clientConfiguration.getHost() + ":" + clientConfiguration.getPortTCP() + ")...");
+                        TCPClientStarter TCPClientStarter = new TCPClientStarter(clientConfiguration);
+                        TCPClientStarter.start();
                     } catch (ClientException e) {
                         System.out.println("Some server connection problem: " + e.getLocalizedMessage());
                     }
                 }
             }
-            System.out.println("End...");
+
+
         } catch (IOException | ConfigurationException e) {
             System.out.println("Error: " + e.getLocalizedMessage());
         }

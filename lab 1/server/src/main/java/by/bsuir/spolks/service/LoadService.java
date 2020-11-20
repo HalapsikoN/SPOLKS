@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoadService {
@@ -19,12 +21,26 @@ public class LoadService {
 
     public void continueLoading(DataInputStream fromClient, DataOutputStream toClient, String clientId, CommandMemory commandMemory) throws IOException, InterruptedException {
 
-        switch (commandMemory.getCommandName()) {
+        switch (commandMemory.getCommandNameTCP()) {
             case DOWNLOAD:
-                Connection.doTCPDownload(clientId, fromClient, toClient, commandMemory.getFileName(), commandMemory.getDownloadedBytes());
+                TCPConnectionService.doTCPDownload(clientId, fromClient, toClient, commandMemory.getFileName(), commandMemory.getDownloadedBytes());
                 break;
             case UPLOAD:
-                Connection.doTCPUpload(clientId, fromClient, toClient, commandMemory.getFileName(), commandMemory.getFileByteArray(), commandMemory.getDownloadedBytes());
+                TCPConnectionService.doTCPUpload(clientId, fromClient, toClient, commandMemory.getFileName(), commandMemory.getFileByteArray(), commandMemory.getDownloadedBytes());
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void continueLoading(DatagramSocket socket, InetAddress address, int port, String clientId, CommandMemory commandMemory) throws IOException, InterruptedException {
+
+        switch (commandMemory.getCommandNameTCP()) {
+            case DOWNLOAD:
+                UDPConnectionService.doUDPDownload(clientId, socket, address, port, commandMemory.getFileName(), commandMemory.getDownloadedBytes());
+                break;
+            case UPLOAD:
+                UDPConnectionService.doUDPUpload(clientId, socket, address, port, commandMemory.getFileName(), commandMemory.getFileByteArray(), commandMemory.getDownloadedBytes());
                 break;
             default:
                 break;

@@ -1,6 +1,7 @@
 package by.bsuir.spolks.service;
 
-import by.bsuir.spolks.command.CommandName;
+import by.bsuir.spolks.command.tcp.CommandNameTCP;
+import by.bsuir.spolks.command.udp.CommandNameUDP;
 import by.bsuir.spolks.entity.CommandMemory;
 import by.bsuir.spolks.entity.FileLoadMemory;
 import lombok.AccessLevel;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemoryService {
@@ -30,7 +33,7 @@ public class MemoryService {
 
             CommandMemory commandMemory = memory.getMap().get(clientId);
 
-            toClient.writeUTF(commandMemory.getCommandName().name() + " " + commandMemory.getFileName() + " " + commandMemory.getDownloadedBytes());
+            toClient.writeUTF(commandMemory.getCommandNameTCP().name() + " " + commandMemory.getFileName() + " " + commandMemory.getDownloadedBytes());
 
             loadService.continueLoading(fromClient, toClient, clientId, commandMemory);
         } else {
@@ -38,13 +41,42 @@ public class MemoryService {
         }
     }
 
-    public void saveDownloadCommandInfo(String clientId, CommandName commandName, String fileName, Integer downloadedBytes, byte[] fileByteArray) {
+    public void checkAndFinishForUnfinishedCommand(DatagramSocket socket, InetAddress address, int port, String clientId) throws IOException, InterruptedException {
+
+        if (hasUnfinishedCommand(clientId)) {
+
+            CommandMemory commandMemory = memory.getMap().get(clientId);
+
+            UDPConnectionService.sendMessage(socket, address, port,commandMemory.getCommandNameUDP().name() + " " + commandMemory.getFileName() + " " + commandMemory.getDownloadedBytes());
+
+            loadService.continueLoading(socket, address, port, clientId, commandMemory);
+        } else {
+            UDPConnectionService.sendMessage(socket, address, port, "NO_COMMAND");
+        }
+    }
+
+    public void saveDownloadCommandInfo(String clientId, CommandNameTCP commandNameTCP, String fileName, Integer downloadedBytes, byte[] fileByteArray) {
         CommandMemory commandMemory = CommandMemory.builder()
                 .fileName(fileName)
-                .commandName(commandName)
+                .commandNameTCP(commandNameTCP)
                 .downloadedBytes(downloadedBytes)
                 .fileByteArray(fileByteArray)
                 .isSaved(true)
+                .isTCPSaved(true)
+                .isUDPSaved(false)
+                .build();
+        memory.getMap().put(clientId, commandMemory);
+    }
+
+    public void saveDownloadCommandInfo(String clientId, CommandNameUDP commandNameUDP, String fileName, Integer downloadedBytes, byte[] fileByteArray) {
+        CommandMemory commandMemory = CommandMemory.builder()
+                .fileName(fileName)
+                .commandNameUDP(commandNameUDP)
+                .downloadedBytes(downloadedBytes)
+                .fileByteArray(fileByteArray)
+                .isSaved(true)
+                .isTCPSaved(false)
+                .isUDPSaved(true)
                 .build();
         memory.getMap().put(clientId, commandMemory);
     }
